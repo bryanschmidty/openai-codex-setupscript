@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+set -e
+
+# ┌─────────────────────────────────────────────────────────────────────────────┐
+# │                             CONFIGURATION JSON                             │
+# │  Edit only the JSON below to declare your variables and sections.          │
+# └─────────────────────────────────────────────────────────────────────────────┘
+CONFIG_JSON=$(cat <<'EOF'
+{
+  "variables": [],
+  "sections": []
+}
+EOF
+)
+
+# ┌─────────────────────────────────────────────────────────────────────────────┐
+# │                       DO NOT MODIFY ANYTHING BELOW                         │
+# └─────────────────────────────────────────────────────────────────────────────┘
+
+# Ensure all declared env-vars are set
+for v in $(jq -r '.variables[]' <<<"$CONFIG_JSON"); do
+  : "${!v:?environment variable $v must be set}"
+done
+
+run_section() {
+  desc="$1"; cmds="$2"
+  echo "🟡 $desc" >&2
+  tmp=$(mktemp)
+  if ! bash -c "$cmds" >"$tmp" 2>&1; then
+    echo "❌ $desc failed. Output:" >&2
+    cat "$tmp" >&2
+    exit 1
+  fi
+  rm -f "$tmp"
+}
+
+run_section_parallel() {
+  desc="$1"; shift
+  echo "🟡 $desc (parallel)" >&2
+  tmpfiles=(); pids=()
+  for cmd in "$@"; do
+    tmp=$(mktemp)
+    tmpfiles+=("$tmp")
+    bash -c "$cmd" >"$tmp" 2>&1 &
+    pids+=("$!")
+  done
+  for i in "${!pids[@]}"; do
+    if ! wait "${pids[i]}"; then
+      echo "❌ $desc failed on: ${!i}" >&2
+      cat "${tmpfiles[i]}" >&2
+      exit 1
+    fi
+  done
+  rm -f "${tmpfiles[@]}"
+}
+
+# Loop through each section
+jq -c '.sections[]' <<<"$CONFIG_JSON" | while read -r section; do
+  desc=$(jq -r '.desc' <<<"$section")
+  if [ "$(jq -r '.parallel // false' <<<"$section")" = "true" ]; then
+    mapfile -t cmds < <(jq -r '.cmds[]' <<<"$section")
+    run_section_parallel "$desc" "${cmds[@]}"
+  else
+    cmds=$(jq -r '.cmds | join(" && ")' <<<"$section")
+    run_section "$desc" "$cmds"
+  fi
+done
+
+echo "✅ Setup Script Complete" >&2
