@@ -1,6 +1,7 @@
 # OpenAI Codex JSON-Driven Setup Script Runner
 
-> A single-file Bash + JSON setup runner built specifically for OpenAI Codex’s single-textarea environment.
+A single-file Bash + JSON setup runner built specifically for OpenAI Codex’s single-textarea environment.
+Created to mute the noise of traditional setup scripts—displaying only section headers by default and revealing full details only when a step fails.
 
 ## Overview
 
