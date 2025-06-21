@@ -17,6 +17,9 @@ EOF
 # │                       DO NOT MODIFY ANYTHING BELOW                         │
 # └─────────────────────────────────────────────────────────────────────────────┘
 
+# Dry-run mode: set DRY_RUN=true in environment to preview commands
+DRY_RUN=${DRY_RUN:-false}
+
 # Ensure all declared env-vars are set
 for v in $(jq -r '.variables[]' <<<"$CONFIG_JSON"); do
   : "${!v:?environment variable $v must be set}"
@@ -25,6 +28,10 @@ done
 run_section() {
   desc="$1"; cmds="$2"
   echo "🟡 $desc" >&2
+  if [ "$DRY_RUN" = "true" ]; then
+    echo "  [DRY RUN] would run: $cmds" >&2
+    return 0
+  fi
   tmp=$(mktemp)
   if ! bash -c "$cmds" >"$tmp" 2>&1; then
     echo "❌ $desc failed. Output:" >&2
@@ -37,6 +44,13 @@ run_section() {
 run_section_parallel() {
   desc="$1"; shift
   echo "🟡 $desc (parallel)" >&2
+  if [ "$DRY_RUN" = "true" ]; then
+    echo "  [DRY RUN] would run in parallel:" >&2
+    for cmd in "$@"; do
+      echo "    $cmd" >&2
+    done
+    return 0
+  fi
   tmpfiles=(); pids=()
   for cmd in "$@"; do
     tmp=$(mktemp)
