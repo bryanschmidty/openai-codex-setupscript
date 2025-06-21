@@ -60,8 +60,9 @@ To preview all commands without executing them, set the `DRY_RUN` environment va
 ## To-Do
 
 * Add per-section timeouts
-* Implement post-error rollback hooks
-* Summarize durations for each section
+* Option to output the std out of a specific section
+* Set timeout for a section
+* Enable timing, which will output the elapsed time of each section and the total time
 * Keep compatibility updated as OpenAI Codex evolves
 
 ## Contributing
