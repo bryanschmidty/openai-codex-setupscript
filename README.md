@@ -74,3 +74,4 @@ Contributions are welcome! Please fork the repo, make your changes, and open a p
 If you find this tool helpful, please consider donating:
 
 [![PayPal Donate](https://img.shields.io/badge/PayPal-Donate-gold?logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=9M7BNKVF9TYF8)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-gold?logo=buymeacoffee)](https://coff.ee/bryanschmidt)
