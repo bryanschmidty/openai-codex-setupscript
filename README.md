@@ -31,6 +31,17 @@ This tool lets you define both the environment variables you require and the sec
    * `"cmds"`: an array of commands to run
    * Optional `"parallel": true` to run that section concurrently
 
+## Codex Custom Instructions
+
+Add the snippet below to **Codex Settings → General → Custom instructions**. Once saved, you can request Codex to generate or modify the environment setup script directly within any project.
+
+```
+# Setup Script
+
+When asked to create or edit the setup script, this is for the OpenAI Codex environment setup script. It is for provisioning the server used for Codex. You can find the template here: https://raw.githubusercontent.com/bryanschmidty/openai-codex-setupscript/refs/heads/main/setup
+you can find instructions on how to use it, and an example JSON structure here: https://raw.githubusercontent.com/bryanschmidty/openai-codex-setupscript/refs/heads/main/README.md
+```
+
 ## Dry Run
 
 To preview all commands without executing them, set the `DRY_RUN` environment variable to `"true"` in the Codex Env & Secrets interface. The script will display the commands it *would* run without making any changes.
